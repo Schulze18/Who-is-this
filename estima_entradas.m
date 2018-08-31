@@ -1,6 +1,6 @@
 close all
 clear all
-clc
+%clc
 
 % load handel
 % 
@@ -8,11 +8,18 @@ clc
 % 
 % signal = y(1:70000)';
 
+person = 2;
+if person == 1
+    load ../../signals/Originais/Bill_185-00003372.mat
+    data2 = [data(10000:270371) data(283630:500000)]; % corta bips indesejados
+    %no sinal Bill
+elseif person ==2
+    load ../../signals/Originais/Garth3092-00007263.mat
+    data2 = data;
+end
 
-load ../signals/Originais/Bill_185-00003372.mat
-data2 = [data(10000:270371) data(283630:500000)]; % corta bips indesejados
-%no sinal Bill
-
+% soundsc(data2,44100)
+%%
 
 %load ../signals/Originais/Charlotte_3346-00006357.mat
 %load ../signals/Originais/Gale102-00005935.mat
@@ -242,6 +249,13 @@ pitch3 = pitch4;
 
 %save('dados_sem_pausa.mat','pitch_sem_pausa', 'sinal_sem_pausa', 'amp_sem_pausa','Fs');
 
-save('dados_com_pausa.mat','pitch3', 'impulsetrain','glottal_out', 'signal', 'amp3_filt','Fs');
+%save('dados_com_pausa.mat','pitch3', 'impulsetrain','glottal_out', 'signal', 'amp3_filt','Fs');
 %sound(sinal_sem_pausa,Fs)
 
+if person == 1
+    save('dados_com_pausa_bill.mat','pitch3', 'impulsetrain','glottal_out', 'signal', 'amp3_filt','Fs');
+elseif person == 2
+    save('dados_com_pausa_garth.mat','pitch3', 'impulsetrain','glottal_out', 'signal', 'amp3_filt','Fs');
+end
+    
+    

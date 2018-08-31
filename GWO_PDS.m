@@ -1,7 +1,8 @@
 clc, clear all, close all%, format long E
 tic
 
-ComPausa = 1;
+%Define qual pessoa esta sendo analisada
+person = 2;
 
 woman=0;
 multiplier=1;
@@ -9,12 +10,13 @@ if woman
     multiplier = 1.3
 end
 
-if ComPausa
-    load dados_com_pausa.mat
+if person == 1
+    load dados_com_pausa_bill.mat
     N = length(pitch3);
     Ts = 1/Fs;
-else
-    load dados_sem_pausa.mat
+elseif person == 2
+    load dados_com_pausa_garth.mat
+    N = length(pitch3);
     Ts = 1/Fs;
 end
 
@@ -22,8 +24,8 @@ end
 %BILL
 
 %%Trecho 1
-%ini = 4000;
-%fim = 13000;
+% ini = 4000;
+% fim = 16000;
 
 %Trecho 2
 % ini = 67000;
@@ -38,8 +40,18 @@ end
 % fim = 16000;
 
 %Trecho 5
-ini = 428000;
-fim = 440000;
+% ini = 428000;
+% fim = 440000;
+
+%Garth
+
+% Trecho 1
+ini = 94000;
+fim = 106000;
+
+% Trecho 2
+% ini = 436000;
+% fim = 448000;
 
 %Charolote
 
@@ -56,8 +68,8 @@ saida = signal(ini:fim);
 entrada2 = amp3_filt.*impulsetrain;
 
 %Parametros da Simulação
-N = 600/100; %Número de interações
-gwolfs_number = 10;
+N = 30; %Número de interações
+gwolfs_number = 2000;
 ordem_trato = 2;
 
 NVz = 2*ordem_trato;
@@ -78,7 +90,8 @@ for index=1:2:NVz
     %bottom = [bottom .99+.001*index, 0];
     
     bottom = [bottom 0.7, lim_F];
-    top = [top 1-1e-15, 10*8^(index/2-0.5)];
+    top = [top 1-1e-15, (1+index)*200];
+    
     lim_F = top(end);
     
     %bottom = [bottom 0.7, 0];
@@ -88,6 +101,9 @@ for index=1:2:NVz
     %top = [top 1-1e-15, index];
 end
 %%
+% top = [1-1e-15 800 1-1e-15 1800]; %Teste apenas
+% bottom = [0.70 0 0.70 800];       %Teste 
+
 top = [top 40 40*2/multiplier 20*2/multiplier]; %Rz N1 N2
 bottom = [bottom 1 4 2];
 
@@ -96,7 +112,7 @@ MAX_LAG = 1000;
 goal = [(1/max(xcorr(saida/max(saida),saida/max(saida))))] % goal absoluto
 eps = 0.47;
 error_parameters = length(goal);
-
+%%
 
 %Parameteros SWO
 % inertia = 0.9;
@@ -121,8 +137,14 @@ gwolfs_parameters = length(bottom);
 for k=1:gwolfs_parameters
     gwolfs(k,:) = bottom(k)*ones(1,gwolfs_number)+(top(k)-bottom(k))*rand(1,gwolfs_number); 
 end
+%%
+%Teste fixando os ganhos
+% gwolfs(5,:) = 3;
+% gwolfs(6,:) = 80;
+% gwolfs(7,:) = 40;
+% top((length(top)-2):length(top)) = [40 44*2/multiplier 22*2/multiplier]; %Rz N1 N2
 
-
+%%
 % for i = 1:gwolfs_number 
 %      
 %      zk = gwolfs(1:2:end-3,i);
@@ -171,7 +193,7 @@ vetor_beta = zeros(1,N);
 vetor_delta = zeros(1,N);
 for m=1:N
     hist(:,m) = gwolfs(:,1);
-    m
+    m;
     %Verifica valor de fitness e atualiza Alfa, Beta e Delta
     for i=1:gwolfs_number
         
@@ -254,9 +276,10 @@ for m=1:N
                 end
             end
         end
-    
-    
     end
+    %Fixa R,N1,N2
+    %gwolfs(5,:) = 3; gwolfs(6,:) = 80; gwolfs(7,:) = 40;
+    
     a = a - 2/N;
    
 end
