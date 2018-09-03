@@ -2,7 +2,7 @@ clc, clear all, close all%, format long E
 tic
 
 %Define qual pessoa esta sendo analisada
-person = 2;
+person = 1;
 
 woman=0;
 multiplier=1;
@@ -40,14 +40,14 @@ end
 % fim = 16000;
 
 %Trecho 5
-% ini = 428000;
-% fim = 440000;
+ini = 428000;
+fim = 440000;
 
 %Garth
 
 % Trecho 1
-ini = 94000;
-fim = 106000;
+% ini = 94000;
+% fim = 106000;
 
 % Trecho 2
 % ini = 436000;

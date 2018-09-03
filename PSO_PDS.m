@@ -1,7 +1,8 @@
 clc, clear all, close all%, format long E
 tic
 
-ComPausa = 1;
+%Define qual pessoa esta sendo analisada
+person = 1;
 
 woman=0;
 multiplier=1;
@@ -9,22 +10,25 @@ if woman
     multiplier = 1.3
 end
 
-if ComPausa
-    load dados_com_pausa.mat
+if person == 1
+    load dados_com_pausa_bill.mat
     N = length(pitch3);
     Ts = 1/Fs;
-else
-    load dados_sem_pausa.mat
+elseif person == 2
+    load dados_com_pausa_garth.mat
+    N = length(pitch3);
     Ts = 1/Fs;
 end
 
 %BILL
 
-ini = 4000;
-fim = 13000;
+%Trecho 1
+% ini = 4000;
+% fim = 16000;
 
-% ini = 1.02e5;
-% fim = 1.1e5;
+%Trecho 2
+ini = 428000;
+fim = 440000;
 
 
 
@@ -44,7 +48,8 @@ entrada2 = amp3_filt.*impulsetrain;
 
 
 %Parametros da Simulação
-N = 100; %Número de interações
+particle_number = 2000;
+N = 30; %Número de interações
 ordem_trato = 2;
 
 NVz = 2*ordem_trato;
@@ -60,16 +65,14 @@ bottom = [];
 top = [];
 lim_F = 0;
 for index=1:2:NVz
-    %bottom = [bottom 0.7, 0];
-    %bottom = [bottom .99+.001*index, 0];
+   
     bottom = [bottom 0.7, lim_F];
     
-    top = [top 1-1e-15, 10*8^(index/2-0.5)];
+    %top = [top 1-1e-15, 10*8^(index/2-0.5)];
+    top = [top 1-1e-15, (1+index)*200];
     lim_F = top(end);
     
-    %top = [top 1-1e-15, 2.5*3^((index+0)/1)];
-    %top = [top 1-1e-15, 2000];
-    %top = [top 1-1e-15, index];
+    
 end
 
 top = [top 40 40*2/multiplier 20*2/multiplier]; %Rz N1 N2
@@ -82,12 +85,11 @@ eps = 0.70;
 error_parameters = length(goal);
 
 %Parameteros SWO
-particle_number = 200;
-inertia = 0.9;
-initial_inertia = .9;
-self_confidence = 0.8;
-toward_best = 0.01;
-speed = .2;
+inertia = 5;
+initial_inertia = 5;
+self_confidence = 10;
+toward_best = 10;
+speed = 0.1;
 z_best_global = 0;
 X_best_global = zeros(length(bottom),1);
 z_best_individual = zeros(particle_number,1);
@@ -123,7 +125,8 @@ end
 m = 0;
 vetor_best_global = zeros(1,N);
 %while max(abs(error) > eps)
-while ((z_best_global < eps) && (m < N) )
+%while ((z_best_global < eps) && (m < N) )
+while m <N
     m = m+1
     %error_acum = 0;
     
@@ -157,7 +160,7 @@ while ((z_best_global < eps) && (m < N) )
     
     for i=1:particle_number
         %if particles(:,i) ~= particles(:,best_particle)
-        %if i ~= index_best_global
+        if i ~= index_best_global
             for j=1:particle_parameters
 
                 particles_dpos(j,i) = speed*(toward_best*rand*(X_best_global(j+1) - particles(j,i)) + self_confidence*rand*(X_best_individual(j+1,i) - particles(j,i)) + inertia*particles_dpos(j,i));
@@ -175,7 +178,7 @@ while ((z_best_global < eps) && (m < N) )
                     end
                 end
             end
-        %end
+        end
     end
     vetor_best_global(m) = X_best_global(1);
 end
