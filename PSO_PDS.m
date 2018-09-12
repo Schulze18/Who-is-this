@@ -23,12 +23,12 @@ end
 %BILL
 
 %Trecho 1
-% ini = 4000;
-% fim = 16000;
+ini = 4000;
+fim = 16000;
 
 %Trecho 2
-ini = 428000;
-fim = 440000;
+% ini = 428000;
+% fim = 440000;
 
 
 
@@ -49,7 +49,9 @@ entrada2 = amp3_filt.*impulsetrain;
 
 %Parametros da Simulação
 particle_number = 2000;
+
 N = 10; %Número de interações
+
 ordem_trato = 2;
 
 NVz = 2*ordem_trato;
@@ -85,11 +87,11 @@ eps = 0.70;
 error_parameters = length(goal);
 
 %Parameteros SWO
-inertia = 5;
-initial_inertia = 5;
-self_confidence = 10;
-toward_best = 10;
-speed = 0.1;
+inertia = 0.9;
+initial_inertia = 0.9;
+self_confidence = 0.8;
+toward_best = 0.01;
+speed = 0.2;
 z_best_global = 0;
 X_best_global = zeros(length(bottom),1);
 z_best_individual = zeros(particle_number,1);
@@ -127,11 +129,9 @@ vetor_best_global = zeros(1,N);
 %while max(abs(error) > eps)
 %while ((z_best_global < eps) && (m < N) )
 while m <N
-    m = m+1
+    m = m+1;
     %error_acum = 0;
     
-
-    hist(:,m) = particles(:,1);
         
     for i=1:particle_number
         
@@ -143,8 +143,12 @@ while m <N
 
         %best_z = desired_function(best_Q, best_R);
         [z, lag, Rz] = desired_function(zk, Fk, Rz, N1, N2, Ts, entrada, saida, MAX_LAG, goal);
+
         
         particles(end-2,i) = Rz; % atualiza o Rz da partícula recalculado dentro da desired_function
+
+        hist(m,i) = z;
+
         
         if z > z_best_individual(i)
             z_best_individual(i) = z;

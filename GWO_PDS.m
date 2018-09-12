@@ -24,8 +24,8 @@ end
 %BILL
 
 %%Trecho 1
-% ini = 4000;
-% fim = 16000;
+ini = 4000;
+fim = 16000;
 
 %Trecho 2
 % ini = 67000;
@@ -40,8 +40,8 @@ end
 % fim = 16000;
 
 %Trecho 5
-ini = 428000;
-fim = 440000;
+% ini = 428000;
+% fim = 440000;
 
 %Garth
 
@@ -68,7 +68,11 @@ saida = signal(ini:fim);
 entrada2 = amp3_filt.*impulsetrain;
 
 %Parametros da Simulação
+<<<<<<< HEAD
 N = 2; %Número de interações
+=======
+N = 800; %Número de interações
+>>>>>>> e529b55f1278b73654eebaffd8d08f7c49619efb
 gwolfs_number = 2000;
 ordem_trato = 2;
 
@@ -192,7 +196,6 @@ vetor_alfa = zeros(1,N);
 vetor_beta = zeros(1,N);
 vetor_delta = zeros(1,N);
 for m=1:N
-    hist(:,m) = gwolfs(:,1);
     m;
     %Verifica valor de fitness e atualiza Alfa, Beta e Delta
     for i=1:gwolfs_number
@@ -213,6 +216,7 @@ for m=1:N
 
         %Determina z,lag e Rz do Wolf atual
         [z, lag, Rz] = desired_function(zk, Fk, Rz, N1, N2, Ts, entrada, saida, MAX_LAG, goal);
+        hist(m,i) = z;
         
         %Verifica verifica se é o novo Alfa, Beta ou Delta
         if z > z_delta(1)
