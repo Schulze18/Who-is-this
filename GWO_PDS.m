@@ -68,7 +68,7 @@ saida = signal(ini:fim);
 entrada2 = amp3_filt.*impulsetrain;
 
 %Parametros da Simulação
-N = 30; %Número de interações
+N = 2; %Número de interações
 gwolfs_number = 2000;
 ordem_trato = 2;
 

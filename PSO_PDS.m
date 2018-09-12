@@ -49,7 +49,7 @@ entrada2 = amp3_filt.*impulsetrain;
 
 %Parametros da Simulação
 particle_number = 2000;
-N = 30; %Número de interações
+N = 10; %Número de interações
 ordem_trato = 2;
 
 NVz = 2*ordem_trato;
@@ -144,6 +144,7 @@ while m <N
         %best_z = desired_function(best_Q, best_R);
         [z, lag, Rz] = desired_function(zk, Fk, Rz, N1, N2, Ts, entrada, saida, MAX_LAG, goal);
         
+        particles(end-2,i) = Rz; % atualiza o Rz da partícula recalculado dentro da desired_function
         
         if z > z_best_individual(i)
             z_best_individual(i) = z;
