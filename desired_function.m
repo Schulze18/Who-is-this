@@ -11,21 +11,17 @@ entrada = glottal_model(entrada,N1,N2);
 %Fk = 2;
 T=Ts;
 
-
-
 %V_z = Rz*tf([1 -1 zeros(1,2*length(zk)-1)],1,Ts);
-V_z = Rz*tf([1 -1 ],1,Ts);
+V_z = Rz*tf([1 -1],[1 0],Ts);
 
 Vk_z(1:length(zk)) = tf(0,1,Ts);
 
 for i=1:length(zk)
-    Vk_z(i) = tf((1-2*abs(zk(i))*cos(2*pi*Fk(i)*T)+abs(zk(i))^2),[1 -2*abs(zk(i))*cos(2*pi*Fk(i)*T)  abs(zk(i))^2],Ts);
+    Vk_z(i) = tf([(1-2*abs(zk(i))*cos(2*pi*Fk(i)*T)+abs(zk(i))^2) 0 0],[1 -2*abs(zk(i))*cos(2*pi*Fk(i)*T)  abs(zk(i))^2],Ts);
     V_z = V_z*Vk_z(i);
 end
 
-
-if isstable(V_z)
-    
+if isstable(V_z) 
     saida_calc = lsim(V_z,entrada);
 else
     saida_calc = zeros(1,length(signal));
@@ -44,13 +40,20 @@ Rz = max(signal)/max(saida_calc);
 % 
 % 
 % out = [1/A mean(abs(aux_X))];
+%disp(saida_calc')
+%disp(signal)
 
 
 
 aux_X = xcorr(saida_calc/max(saida_calc),signal/max(signal));
+
+%aux_X = (signal/max(signal))*(saida_calc/max(saida_calc));
+
+
 %aux_X =conv(saida_calc,signal);
 
 A = max(aux_X);
+%A = aux_X;
 
 lag=0;
 

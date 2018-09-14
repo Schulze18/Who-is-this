@@ -11,7 +11,8 @@ if woman
 end
 
 if person == 1
-    load dados_com_pausa_bill.mat
+    %load dados_com_pausa_bill.mat
+    load dados_com_pausa.mat
     N = length(pitch3);
     Ts = 1/Fs;
 elseif person == 2
@@ -23,8 +24,8 @@ end
 %BILL
 
 %Trecho 1
-ini = 4000;
-fim = 16000;
+ini = 10000;
+fim = 14000;
 
 %Trecho 2
 % ini = 428000;
@@ -50,7 +51,7 @@ entrada2 = amp3_filt.*impulsetrain;
 %Parametros da Simulação
 particle_number = 2000;
 
-N = 10; %Número de interações
+N = 801; %Número de interações
 
 ordem_trato = 2;
 
@@ -68,17 +69,20 @@ top = [];
 lim_F = 0;
 for index=1:2:NVz
    
-    bottom = [bottom 0.7, lim_F];
+    bottom = [bottom 0.95, lim_F];
     
     %top = [top 1-1e-15, 10*8^(index/2-0.5)];
-    top = [top 1-1e-15, (1+index)*200];
+    top = [top 1-1e-15, (1+index)*20];
     lim_F = top(end);
     
     
 end
 
-top = [top 40 40*2/multiplier 20*2/multiplier]; %Rz N1 N2
-bottom = [bottom 1 4 2];
+%N1 usualmente é ~3ms ou 132@44100Hz
+%N2 usualmente é ~1.5ms ou 70@44100Hz
+
+top = [top 40 150/multiplier 80/multiplier]; %Rz N1 N2
+bottom = [bottom 1 10 5];
 
 MAX_LAG = 1000;
 
@@ -123,6 +127,8 @@ end
 % bla=0;
 % toc
 
+hist = zeros(N,particle_number);
+
 %%
 m = 0;
 vetor_best_global = zeros(1,N);
@@ -165,7 +171,7 @@ while m <N
     
     for i=1:particle_number
         %if particles(:,i) ~= particles(:,best_particle)
-        if i ~= index_best_global
+        %if i ~= index_best_global
             for j=1:particle_parameters
 
                 particles_dpos(j,i) = speed*(toward_best*rand*(X_best_global(j+1) - particles(j,i)) + self_confidence*rand*(X_best_individual(j+1,i) - particles(j,i)) + inertia*particles_dpos(j,i));
@@ -183,7 +189,7 @@ while m <N
                     end
                 end
             end
-        end
+        %end
     end
     vetor_best_global(m) = X_best_global(1);
 end
@@ -191,11 +197,11 @@ end
 %%
 
 z_best_global
-zk = X_best_global(2:1:(2+ordem_trato-1));
-Fk = X_best_global((2+ordem_trato):1:(2+2*ordem_trato-1));
-Rz = X_best_global(end-3);
-N1 = X_best_global(end-2);
-N2 = X_best_global(end-1);
+zk = X_best_global(2:1:(2+ordem_trato-1))
+Fk = X_best_global((2+ordem_trato):1:(2+2*ordem_trato-1))
+Rz = X_best_global(end-3)
+N1 = X_best_global(end-2)
+N2 = X_best_global(end-1)
 
 T=Ts;
 
